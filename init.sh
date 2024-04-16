@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+#set -e
 
 delete_default_vpc() {
     echo "Fetching Enabled Regions"
