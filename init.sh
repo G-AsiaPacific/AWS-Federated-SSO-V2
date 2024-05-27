@@ -102,7 +102,7 @@ EOL
   ]
 }
 EOL
-    aws iam create-role --role-name $Tech_ROLE_NAME --assume-role-policy-document file://$TRUST_RELATIONSHIP_FILE --query 'Role.Arn'
+    aws iam create-role --role-name $Tech_ROLE_NAME --assume-role-policy-document file://$TRUST_RELATIONSHIP_FILE --query 'Role.Arn' --max-session-duration 43200
     aws iam create-role --role-name $Billing_ROLE_NAME --assume-role-policy-document file://$TRUST_RELATIONSHIP_FILE --query 'Role.Arn'
     aws iam put-role-policy --role-name $Billing_ROLE_NAME --policy-name CostExplorerPolicy --policy-document file://$COST_EXPLORER_FILE
     aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AdministratorAccess --role-name $Tech_ROLE_NAME
