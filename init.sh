@@ -13,32 +13,37 @@ delete_default_vpc() {
             echo "No default VPC in region $region"
             continue
         fi
+
         subnet_ids=$(aws ec2 describe-subnets --region $region --filters "Name=vpc-id,Values=$default_vpc_id" --query 'Subnets[].SubnetId' --output text)
         for id in $subnet_ids; do
             echo "Deleting subnet $id in region $region"
             aws ec2 delete-subnet --region $region --subnet-id $id
         done
-        sg_ids=$(aws ec2 describe-security-groups --region $region --filters "Name=vpc-id,Values=$default_vpc_id" "Name=group-name,Values=default" --query 'SecurityGroups[?GroupName=='default'].GroupId[]' --output text)
+
+        sg_ids=$(aws ec2 describe-security-groups --region $region --filters "Name=vpc-id,Values=$default_vpc_id" "Name=group-name,Values=default" --query 'SecurityGroups[?GroupName==`default`].GroupId' --output text)
         for id in $sg_ids; do
             echo "Deleting security group $id in region $region"
             aws ec2 delete-security-group --region $region --group-id $id
         done
+
         igw_ids=$(aws ec2 describe-internet-gateways --region $region --filters "Name=attachment.vpc-id,Values=$default_vpc_id" --query 'InternetGateways[].InternetGatewayId' --output text)
         for id in $igw_ids; do
             echo "Detaching and deleting internet gateway $id in region $region"
             aws ec2 detach-internet-gateway --region $region --internet-gateway-id $id --vpc-id $default_vpc_id
             aws ec2 delete-internet-gateway --region $region --internet-gateway-id $id
         done
-        rt_ids=$(aws ec2 describe-route-tables --region $region --filters "Name=vpc-id,Values=$default_vpc_id" --query 'RouteTables[?Associations[0].Main==`true`].RouteTableId' --output text)
-        for id in $rt_ids; do
-            echo "Deleting route table $id in region $region"
-            aws ec2 delete-route-table --region $region --route-table-id $id
+
+        rt_ids=$(aws ec2 describe-route-tables --region $region --filters "Name=vpc-id,Values=$default_vpc_id" --query 'RouteTables[].RouteTableId' --output text)
+        for rt_id in $rt_ids; do
+            echo "Deleting route table associations in region $region"
+            associations=$(aws ec2 describe-route-tables --region $region --route-table-id $rt_id --query 'RouteTables[].Associations[?Main!=`true`].RouteTableAssociationId' --output text)
+            for assoc_id in $associations; do
+                aws ec2 disassociate-route-table --region $region --association-id $assoc_id
+            done
+            echo "Deleting route table $rt_id in region $region"
+            aws ec2 delete-route-table --region $region --route-table-id $rt_id
         done
-        nacl_ids=$(aws ec2 describe-network-acls --region $region --filters "Name=vpc-id,Values=$default_vpc_id" --query 'NetworkAcls[?IsDefault==`true`].NetworkAclId' --output text)
-        for id in $nacl_ids; do
-            echo "Deleting network acl $id in region $region"
-            aws ec2 delete-network-acl --region $region --network-acl-id $id
-        done
+
         echo "Deleting VPC $default_vpc_id in region $region"
         aws ec2 delete-vpc --region $region --vpc-id $default_vpc_id
     done
@@ -57,9 +62,26 @@ create_ra() {
 }
 
 create_iam_role() {
-    echo "Customer Name (without space):"
-    read CUSTOMER_NAME_INPUT
-    if [ -z "$CUSTOMER_NAME_INPUT" ]; then echo 'Inputs cannot be blank please try again!'; exit 0; fi
+    while true; do
+        echo "Customer Name (without space):"
+        read CUSTOMER_NAME_INPUT
+        if [ -z "$CUSTOMER_NAME_INPUT" ]; then
+            echo 'Inputs cannot be blank, please try again!'
+        elif [[ "$CUSTOMER_NAME_INPUT" == *" "* ]]; then
+            CUSTOMER_NAME_INPUT=${CUSTOMER_NAME_INPUT// /-}
+            echo "Input contains spaces. Replaced spaces with '-': $CUSTOMER_NAME_INPUT"
+            echo "Do you agree with this change? (yes/NO)"
+            read AGREEMENT
+            if [[ "$AGREEMENT" =~ ^(yes|YES|y|Y)$ ]]; then
+                break
+            else
+                echo "Please enter the Customer Name again without spaces."
+            fi
+        else
+            break
+        fi
+    done
+
     CUSTOMER_NAME=$CUSTOMER_NAME_INPUT
     ACCOUNT_ID=$(aws sts get-caller-identity | jq -r .Account)
     curl --silent -o $METADATA_FILE $METADATA_URL
