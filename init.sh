@@ -20,7 +20,7 @@ delete_default_vpc() {
             aws ec2 delete-subnet --region $region --subnet-id $id
         done
 
-        sg_ids=$(aws ec2 describe-security-groups --region $region --filters "Name=vpc-id,Values=$default_vpc_id" "Name=group-name,Values=default" --query 'SecurityGroups[?GroupName==`default`].GroupId' --output text)
+        sg_ids=$(aws ec2 describe-security-groups --region $region --filters "Name=vpc-id,Values=$default_vpc_id" "Name=group-name,Values=default" --query 'SecurityGroups[?GroupName=='default'].GroupId' --output text)
         for id in $sg_ids; do
             echo "Deleting security group $id in region $region"
             aws ec2 delete-security-group --region $region --group-id $id
