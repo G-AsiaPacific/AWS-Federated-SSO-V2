@@ -153,9 +153,9 @@ check_region() {
     esac
 
     echo 'Below are the roles for Keycloak realm roles registration:'
-    echo ${TECH_ROLE_ARN#"\"}','${IDP_ARN#"\"}
+    echo ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}
     echo 'Technical Role for AWS PMA Account '$CUSTOMER_NAME_FOR_DESCRIPTION '('$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION')'
-    echo ${BILLING_ROLE_ARN#"\"}','${IDP_ARN#"\"}
+    echo ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/}
     echo 'Billing Role for AWS PMA Account '$CUSTOMER_NAME_FOR_DESCRIPTION '('$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION')'
 }
 
