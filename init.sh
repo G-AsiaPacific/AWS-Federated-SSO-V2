@@ -145,12 +145,6 @@ check_region() {
         3) ACCOUNT_REGION="Vietnam";;
         *) echo "Invalid input. Try again!"
     esac
-
-    echo 'Below are the roles for Keycloak realm roles registration:'
-    echo ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}
-    echo 'Technical Role for AWS PMA Account '$CUSTOMER_NAME_FOR_DESCRIPTION '('$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION')'
-    echo ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/}
-    echo 'Billing Role for AWS PMA Account '$CUSTOMER_NAME_FOR_DESCRIPTION '('$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION')'
 }
 
 check_type_account() {
@@ -164,6 +158,18 @@ check_type_account() {
         2) create_ra; create_iam_role; check_region ;;
         *) echo 'Sorry, try again' >&2 ;;
     esac
+    echo 'Below are the roles for Keycloak realm roles registration:'
+    if [ $choose_type_account -eq 0 ]; then
+        echo ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}
+        echo 'Technical Role for AWS PMA Account '$CUSTOMER_NAME_FOR_DESCRIPTION '('$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION')'
+        echo ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/}
+        echo 'Billing Role for AWS PMA Account '$CUSTOMER_NAME_FOR_DESCRIPTION '('$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION')'
+    else
+        echo ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}
+        echo 'Technical Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION
+        echo ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/}
+        echo 'Billing Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION
+    fi
 }
 
 check_type_account
