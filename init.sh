@@ -82,6 +82,7 @@ create_iam_role() {
         fi
     done
 
+    echo 'Creating IAM Roles and IDP Provider...'
     CUSTOMER_NAME=$CUSTOMER_NAME_INPUT
     CUSTOMER_NAME_FOR_DESCRIPTION=$(echo "$CUSTOMER_NAME_INPUT" | tr '-' '\040' | tr _ ' ')
     ACCOUNT_ID=$(aws sts get-caller-identity | jq -r .Account)
@@ -152,9 +153,9 @@ check_region() {
     esac
 
     echo 'Below are the roles for Keycloak realm roles registration:'
-    echo ${TECH_ROLE_ARN#\"}','${IDP_ARN#\"}
+    echo ${TECH_ROLE_ARN#\}','${IDP_ARN#\}
     echo 'Technical Role for AWS PMA Account '$CUSTOMER_NAME_FOR_DESCRIPTION '('$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION')'
-    echo ${BILLING_ROLE_ARN#\"}','${IDP_ARN#\"}
+    echo ${BILLING_ROLE_ARN#\}','${IDP_ARN#\}
     echo 'Billing Role for AWS PMA Account '$CUSTOMER_NAME_FOR_DESCRIPTION '('$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION')'
 }
 
