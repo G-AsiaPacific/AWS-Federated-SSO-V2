@@ -161,9 +161,9 @@ check_type_account() {
     echo 'Below are the roles for Keycloak realm roles registration:'
     if [ $choose_type_account -eq 1 ]; then
         echo ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}
-        echo 'Technical Role for AWS PMA Account '$CUSTOMER_NAME_FOR_DESCRIPTION '('$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION')'
+        echo 'Technical Role for AWS PMA Account'${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION')'
         echo ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/}
-        echo 'Billing Role for AWS PMA Account '$CUSTOMER_NAME_FOR_DESCRIPTION '('$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION')'
+        echo 'Billing Role for AWS PMA Account '${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION')'
     else
         echo ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}
         echo 'Technical Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION
