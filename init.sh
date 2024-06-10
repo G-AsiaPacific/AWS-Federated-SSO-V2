@@ -151,7 +151,7 @@ check_type_account() {
     echo "[0] AWS Root Account (RA)"
     echo "[1] AWS PMA Account"
     echo "[2] AWS Billing Transfer Account"
-    read -p "Enter your account type (0 & 1): " choose_type_account
+    read -p "Enter your account type (0 - 2): " choose_type_account
     case $choose_type_account in
         0) create_ra; create_iam_role; check_region; delete_default_vpc ;;
         1) create_ra; create_iam_role; check_region ;;
@@ -159,7 +159,7 @@ check_type_account() {
         *) echo 'Sorry, try again' >&2 ;;
     esac
     echo 'Below are the roles for Keycloak realm roles registration:'
-    if [ $choose_type_account -eq 0 ]; then
+    if [ $choose_type_account -eq 1 ]; then
         echo ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}
         echo 'Technical Role for AWS PMA Account '$CUSTOMER_NAME_FOR_DESCRIPTION '('$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION')'
         echo ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/}
