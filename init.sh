@@ -49,12 +49,6 @@ delete_default_vpc() {
     done
 }
 
-# create_pma() {
-#     PROVIDER_NAME="GAPSSO2"
-#     METADATA_FILE="KeycloakGAPSSO.xml"
-#     METADATA_URL="https://raw.githubusercontent.com/G-AsiaPacific/AWS-Federated-SSO-V2/main/KeycloakGAPSSO.xml"
-# }
-
 create_ra() {
     PROVIDER_NAME="GAPSSO2"
     METADATA_FILE="KeycloakGAPSSO.xml"
@@ -162,10 +156,12 @@ check_region() {
 check_type_account() {
     echo "[0] AWS Root Account (RA)"
     echo "[1] AWS PMA Account"
+    echo "[2] AWS Billing Transfer Account"
     read -p "Enter your account type (0 & 1): " choose_type_account
     case $choose_type_account in
         0) create_ra; create_iam_role; check_region; delete_default_vpc ;;
         1) create_ra; create_iam_role; check_region ;;
+        2) create_ra; create_iam_role; check_region ;;
         *) echo 'Sorry, try again' >&2 ;;
     esac
 }
