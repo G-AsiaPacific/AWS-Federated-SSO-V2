@@ -131,6 +131,7 @@ EOL
     aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/job-function/Billing --role-name $Tech_ROLE_NAME
     aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/job-function/Billing --role-name $Billing_ROLE_NAME
     aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AWSSupportAccess --role-name $Billing_ROLE_NAME
+    aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AWSSavingsPlansFullAccess --role-name $Billing_ROLE_NAME
     rm $TRUST_RELATIONSHIP_FILE $COST_EXPLORER_FILE $METADATA_FILE
 }
 
