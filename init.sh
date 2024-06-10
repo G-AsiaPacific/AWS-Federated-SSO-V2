@@ -49,11 +49,11 @@ delete_default_vpc() {
     done
 }
 
-create_pma() {
-    PROVIDER_NAME="GoogleSSO"
-    METADATA_FILE="GoogleIDPMetadata.xml"
-    METADATA_URL="https://raw.githubusercontent.com/G-AsiaPacific/AWS-Federated-SSO-V2/main/GoogleIDPMetadata.xml"
-}
+# create_pma() {
+#     PROVIDER_NAME="GAPSSO2"
+#     METADATA_FILE="KeycloakGAPSSO.xml"
+#     METADATA_URL="https://raw.githubusercontent.com/G-AsiaPacific/AWS-Federated-SSO-V2/main/KeycloakGAPSSO.xml"
+# }
 
 create_ra() {
     PROVIDER_NAME="GAPSSO2"
@@ -140,7 +140,7 @@ check_type_account() {
     read choose_type_account
     case $choose_type_account in
         0) create_ra; create_iam_role; delete_default_vpc ;;
-        1) create_pma; create_iam_role ;;
+        1) create_ra; create_iam_role ;;
         *) echo 'Sorry, try again' >&2 ;;
     esac
 }
