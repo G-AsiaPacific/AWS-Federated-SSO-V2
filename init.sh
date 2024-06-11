@@ -89,7 +89,8 @@ create_iam_role() {
     #     echo "SAML Provider '$PROVIDER_NAME' already exists. Skipping..."
     #     IDP_ARN='arn:aws:iam::'$ACCOUNT_ID':saml-provider/'$PROVIDER_NAME
     # fi
-    if aws iam get-saml-provider --saml-provider-arn arn:aws:iam::$ACCOUNT_ID:saml-provider/$PROVIDER_NAME &> /dev/null; then
+    aws iam get-saml-provider --saml-provider-arn arn:aws:iam::$ACCOUNT_ID:saml-provider/$PROVIDER_NAME > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
         echo "SAML Provider '$PROVIDER_NAME' already exists. Skipping..."
         IDP_ARN=arn:aws:iam::$ACCOUNT_ID:saml-provider/$PROVIDER_NAME
     else
