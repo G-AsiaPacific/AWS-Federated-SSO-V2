@@ -176,6 +176,7 @@ check_region() {
 }
 
 check_type_account() {
+    echo "Choose your account type:"
     echo "[0] AWS Root Account (RA)"
     echo "[1] AWS PMA Account"
     echo "[2] AWS Billing Transfer Account"
