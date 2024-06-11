@@ -81,7 +81,13 @@ create_iam_role() {
     CUSTOMER_NAME_FOR_DESCRIPTION=$(echo "$CUSTOMER_NAME_INPUT" | tr '-' '\040' | tr _ ' ')
     ACCOUNT_ID=$(aws sts get-caller-identity | jq -r .Account)
     curl --silent -o $METADATA_FILE $METADATA_URL
-    IDP_ARN=$(aws iam create-saml-provider --saml-metadata-document file://$METADATA_FILE --name $PROVIDER_NAME --query 'SAMLProviderArn')
+    aws get-saml-provider --saml-provider-arn arn:aws:iam::$ACCOUNT_ID:saml-provider/$PROVIDER_NAME  > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+    echo "SAML Provider '$PROVIDER_NAME' does not exist. Creating a new provider..."
+        IDP_ARN=$(aws iam create-saml-provider --saml-metadata-document file://$METADATA_FILE --name $PROVIDER_NAME --query 'SAMLProviderArn')
+    else
+        echo "SAML Provider '$PROVIDER_NAME' already exists. Skipping..."
+    fi
     Tech_ROLE_NAME=$CUSTOMER_NAME"-SSO-Tech"
     Billing_ROLE_NAME=$CUSTOMER_NAME"-SSO-Billing"
     TRUST_RELATIONSHIP_FILE="trust-relationship.json"
@@ -129,7 +135,7 @@ EOL
         echo "Role '$Tech_ROLE_NAME' already exists. Updating its Trust Relationship to utilize GAPSSO2..."
         aws iam update-role-trust-policy --role-name $Tech_ROLE_NAME --policy-document file://$TRUST_RELATIONSHIP_FILE
     fi
-    
+
     aws iam get-role --role-name $Billing_ROLE_NAME > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         echo "Role '$Billing_ROLE_NAME' does not exist. Creating a new role..."
