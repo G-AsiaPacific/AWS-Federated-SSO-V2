@@ -159,6 +159,7 @@ EOL
 }
 
 check_region() {
+    echo "Customer account origin:"
     echo "[0] Malaysia"
     echo "[1] Singapore"
     echo "[2] Indonesia"
