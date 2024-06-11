@@ -81,21 +81,13 @@ create_iam_role() {
     CUSTOMER_NAME_FOR_DESCRIPTION=$(echo "$CUSTOMER_NAME_INPUT" | tr '-' '\040' | tr _ ' ')
     ACCOUNT_ID=$(aws sts get-caller-identity | jq -r .Account)
     curl --silent -o $METADATA_FILE $METADATA_URL
-    # aws get-saml-provider --query 'SAMLProviders[] | length(@)' --output text > /dev/null 2>&1
-    # if [ $? -ne 0 ]; then
-    #     echo "SAML Provider '$PROVIDER_NAME' does not exist. Creating a new provider..."
-    #     IDP_ARN=$(aws iam create-saml-provider --saml-metadata-document file://$METADATA_FILE --name $PROVIDER_NAME --query 'SAMLProviderArn')
-    # else
-    #     echo "SAML Provider '$PROVIDER_NAME' already exists. Skipping..."
-    #     IDP_ARN='arn:aws:iam::'$ACCOUNT_ID':saml-provider/'$PROVIDER_NAME
-    # fi
     aws iam get-saml-provider --saml-provider-arn arn:aws:iam::$ACCOUNT_ID:saml-provider/$PROVIDER_NAME > /dev/null 2>&1
     if [ $? -eq 0 ]; then
         echo "SAML Provider '$PROVIDER_NAME' already exists. Skipping..."
         IDP_ARN=arn:aws:iam::$ACCOUNT_ID:saml-provider/$PROVIDER_NAME
     else
         echo "SAML Provider '$PROVIDER_NAME' does not exist. Creating a new provider..."
-        IDP_ARN=$(aws iam create-saml-provider --saml-metadata-document file://$METADATA_FILE --name $PROVIDER_NAME --query 'SAMLProviderArn')
+        IDP_ARN=$(aws iam create-saml-provider --saml-metadata-document file://$METADATA_FILE --name $PROVIDER_NAME --query 'SAMLProviderArn' --output text)
     fi
     Tech_ROLE_NAME=$CUSTOMER_NAME"-SSO-Tech"
     Billing_ROLE_NAME=$CUSTOMER_NAME"-SSO-Billing"
