@@ -87,6 +87,7 @@ create_iam_role() {
         IDP_ARN=$(aws iam create-saml-provider --saml-metadata-document file://$METADATA_FILE --name $PROVIDER_NAME --query 'SAMLProviderArn')
     else
         echo "SAML Provider '$PROVIDER_NAME' already exists. Skipping..."
+        IDP_ARN='arn:aws:iam::'$ACCOUNT_ID':saml-provider/'$PROVIDER_NAME
     fi
     Tech_ROLE_NAME=$CUSTOMER_NAME"-SSO-Tech"
     Billing_ROLE_NAME=$CUSTOMER_NAME"-SSO-Billing"
