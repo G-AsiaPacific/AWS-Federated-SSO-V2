@@ -138,12 +138,13 @@ EOL
 
     aws iam get-role --role-name $Tech_ROLE_NAME > /dev/null 2>&1
     if [ $? -ne 0 ]; then
-    echo "Role '$Tech_ROLE_NAME' does not exist. Creating a new role..."
+        echo "Role '$Tech_ROLE_NAME' does not exist. Creating a new role..."
         TECH_ROLE_ARN=$(aws iam create-role --role-name $Tech_ROLE_NAME --assume-role-policy-document file://$TRUST_RELATIONSHIP_FILE --query 'Role.Arn' --max-session-duration 43200)
     else
         echo "Role '$Tech_ROLE_NAME' already exists. Updating its Trust Relationship to utilize GAPSSO2..."
-        aws iam update-assume-role-policy --role-name $Tech_ROLE_NAME --policy-document file://$TRUST_RELATIONSHIP_FILE --query 'Role.Arn' --max-session-duration 43200
-        TECH_ROLE_ARN=arn:aws:iam::$ACCOUNT_ID:role/$Tech_ROLE_NAME
+        aws iam update-assume-role-policy --role-name $Tech_ROLE_NAME --policy-document file://$TRUST_RELATIONSHIP_FILE --query 'Role.Arn'
+        aws iam update-role --role-name $Tech_ROLE_NAME --max-session-duration 43200
+        TECH_ROLE_ARN="arn:aws:iam::"$ACCOUNT_ID":role/"$Tech_ROLE_NAME
     fi
 
     aws iam get-role --role-name $Billing_ROLE_NAME > /dev/null 2>&1
@@ -153,7 +154,7 @@ EOL
     else
         echo "Role '$Billing_ROLE_NAME' already exists. Updating its Trust Relationship to utilize GAPSSO2..."
         aws iam update-assume-role-policy --role-name $Billing_ROLE_NAME --policy-document file://$TRUST_RELATIONSHIP_FILE --query 'Role.Arn'
-        BILLING_ROLE_ARN=arn:aws:iam::$ACCOUNT_ID:role/$Billing_ROLE_NAME
+        BILLING_ROLE_ARN="arn:aws:iam::"$ACCOUNT_ID":role/"$Billing_ROLE_NAME
     fi
 
     aws iam put-role-policy --role-name $Billing_ROLE_NAME --policy-name CostExplorerPolicy --policy-document file://$COST_EXPLORER_FILE
