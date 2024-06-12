@@ -49,10 +49,33 @@ delete_default_vpc() {
     done
 }
 
-create_ra() {
+create_idp() {
     PROVIDER_NAME="GAPSSO2"
     METADATA_FILE="KeycloakGAPSSO.xml"
     METADATA_URL="https://raw.githubusercontent.com/G-AsiaPacific/AWS-Federated-SSO-V2/main/KeycloakGAPSSO.xml"
+}
+
+pma_enable_org() {
+    echo "Create Organization ?"
+    read -p "Enter your choice (Y/N): " check_create_org
+
+    case $check_create_org in
+        y) aws organizations create-organization;;
+        Y) aws organizations create-organization;;
+        n) echo "won't Proceed to create organization";;
+        N) echo "won't Proceed to create organization";;
+        *) echo "Invalid input. Try again!"
+    esac
+    
+}
+
+push_role_sso() {
+    input1=$1 
+    input2=$2
+    echo "Parameter #1 is $1"
+    echo "input #2 is $2"
+    echo "Parameter #1 is $input1"
+    echo "input #2 is $input2"
 }
 
 create_iam_role() {
@@ -182,22 +205,26 @@ check_type_account() {
     echo "[2] AWS Billing Transfer Account"
     read -p "Enter your account type (0 - 2): " choose_type_account
     case $choose_type_account in
-        0) create_ra; create_iam_role; check_region; delete_default_vpc ;;
-        1) create_ra; create_iam_role; check_region ;;
-        2) create_ra; create_iam_role; check_region ;;
+        0) create_idp; create_iam_role; check_region; delete_default_vpc ;;
+        1) create_idp; create_iam_role; check_region ;;
+        2) create_idp; create_iam_role; check_region ;;
         *) echo 'Sorry, try again' >&2 ;;
     esac
-    echo 'Below are the roles for Keycloak realm roles registration:'
+    echo 'Below are the roles for SSO roles registration:'
     if [ $choose_type_account -eq 1 ]; then
         echo ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}
         echo 'Technical Role for AWS PMA Account'${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION' )'
         echo ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/}
         echo 'Billing Role for AWS PMA Account'${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION' )'
+        echo ""
+        push_role_sso "${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}" "Technical Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION"
     else
         echo ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}
         echo 'Technical Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION
         echo ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/}
         echo 'Billing Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION
+        echo ""
+        push_role_sso "${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}" "Technical Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION"
     fi
 }
 
