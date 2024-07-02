@@ -120,6 +120,7 @@ create_iam_role() {
     fi
     Tech_ROLE_NAME=$CUSTOMER_NAME"-SSO-Tech"
     Billing_ROLE_NAME=$CUSTOMER_NAME"-SSO-Billing"
+    ReadOnly_ROLE_NAME=$CUSTOMER_NAME"-SSO-ReadOnlyAccess"
     TRUST_RELATIONSHIP_FILE="trust-relationship.json"
     cat > $TRUST_RELATIONSHIP_FILE << EOL
 {
@@ -178,12 +179,24 @@ EOL
         BILLING_ROLE_ARN="arn:aws:iam::"$ACCOUNT_ID":role/"$Billing_ROLE_NAME
     fi
 
+    aws iam get-role --role-name $ReadOnly_ROLE_NAME > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "Role '$ReadOnly_ROLE_NAME' does not exist. Creating a new role..."
+        READONLY_ROLE_ARN=$(aws iam create-role --role-name $ReadOnly_ROLE_NAME --assume-role-policy-document file://$TRUST_RELATIONSHIP_FILE --query 'Role.Arn')
+    else
+        echo "Role '$ReadOnly_ROLE_NAME' already exists. Updating its Trust Relationship to utilize GAPSSO2..."
+        aws iam update-assume-role-policy --role-name $ReadOnly_ROLE_NAME --policy-document file://$TRUST_RELATIONSHIP_FILE --query 'Role.Arn'
+        READONLY_ROLE_ARN="arn:aws:iam::"$ACCOUNT_ID":role/"$ReadOnly_ROLE_NAME
+    fi
+
     aws iam put-role-policy --role-name $Billing_ROLE_NAME --policy-name CostExplorerPolicy --policy-document file://$COST_EXPLORER_FILE
     aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AdministratorAccess --role-name $Tech_ROLE_NAME
     aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/job-function/Billing --role-name $Tech_ROLE_NAME
     aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/job-function/Billing --role-name $Billing_ROLE_NAME
     aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AWSSupportAccess --role-name $Billing_ROLE_NAME
     aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AWSSavingsPlansFullAccess --role-name $Billing_ROLE_NAME
+    aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/ReadOnlyAccess --role-name $ReadOnly_ROLE_NAME
+    aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AWSBillingReadOnlyAccess --role-name $ReadOnly_ROLE_NAME
     rm $TRUST_RELATIONSHIP_FILE $COST_EXPLORER_FILE $METADATA_FILE
 }
 
@@ -222,15 +235,23 @@ check_type_account() {
         echo 'Technical Role for AWS PMA Account'${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION' )'
         echo ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/}
         echo 'Billing Role for AWS PMA Account'${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION' )'
+        echo ${READONLY_ROLE_ARN//\"/}','${IDP_ARN//\"/}
+        echo 'ReadOnlyAccess Role for AWS PMA Account'${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION' )'
         echo ""
-        push_role_sso "${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}" "Technical Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION"
+        push_role_sso "${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}" "Technical Role for AWS PMA Account '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION"
+        push_role_sso "${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/}" "Billing Role for AWS PMA Account '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION"
+        push_role_sso "${READONLY_ROLE_ARN//\"/}','${IDP_ARN//\"/}" "ReadOnly Role for AWS PMA Account '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION"
     else
         echo ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}
         echo 'Technical Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION
         echo ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/}
         echo 'Billing Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION
+        echo ${READONLY_ROLE_ARN//\"/}','${IDP_ARN//\"/}
+        echo 'ReadOnlyAccess Role for '${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION' )'
         echo ""
         push_role_sso "${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}" "Technical Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION"
+        push_role_sso "${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/}" "Billing Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION"
+        push_role_sso "${READONLY_ROLE_ARN//\"/}','${IDP_ARN//\"/}" "ReadOnly Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION"
     fi
 }
 
