@@ -70,12 +70,18 @@ pma_enable_org() {
 }
 
 push_role_sso() {
+
+    # --data '{"roleName": "role_name", "roleDescription": "description", "accountId": 1234567890 }'
+    # $1 is arn $2 is description $3 region
+    ACCOUNT_ID=$(aws sts get-caller-identity | jq -r .Account)
     input1=$1 
     input2=$2
-    echo "Parameter #1 is $1"
-    echo "input #2 is $2"
-    echo "Parameter #1 is $input1"
-    echo "input #2 is $input2"
+    input3=$3
+    curl --silent -k --header 'Content-Type: application/json' -d '{"roleName": "$1", "roleDescription": "$2", "accountId": $ACCOUNT_ID }' https://pantau.g-asiapac.com/auth/idp/v0/yes
+    # echo "Parameter #1 is $1"
+    # echo "input #2 is $2"
+    # echo "Parameter #1 is $input1"
+    # echo "input #2 is $input2"
 }
 
 create_iam_role() {
