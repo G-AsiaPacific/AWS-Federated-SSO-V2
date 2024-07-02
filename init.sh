@@ -60,8 +60,8 @@ pma_enable_org() {
     read -p "Enter your choice (Y/N): " check_create_org
 
     case $check_create_org in
-        y) aws organizations create-organization;;
-        Y) aws organizations create-organization;;
+        y) aws organizations create-organization && aws organizations enable-aws-service-access --service-principal reachabilityanalyzer.networkinsights.amazonaws.com;;
+        Y) aws organizations create-organization && aws organizations enable-aws-service-access --service-principal reachabilityanalyzer.networkinsights.amazonaws.com;;
         n) echo "won't Proceed to create organization";;
         N) echo "won't Proceed to create organization";;
         *) echo "Invalid input. Try again!"
