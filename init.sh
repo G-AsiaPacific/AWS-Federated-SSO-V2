@@ -238,6 +238,7 @@ check_type_account() {
         echo ${READONLY_ROLE_ARN//\"/}','${IDP_ARN//\"/}
         echo 'ReadOnlyAccess Role for AWS PMA Account'${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION' )'
         echo ""
+        echo "Creating Realms on KeyCloak..."
         push_role_sso ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/} "Technical Role for AWS PMA Account $CUSTOMER_NAME_FOR_DESCRIPTION $ACCOUNT_REGION"
         push_role_sso ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/} "Billing Role for AWS PMA Account $CUSTOMER_NAME_FOR_DESCRIPTION $ACCOUNT_REGION"
         push_role_sso ${READONLY_ROLE_ARN//\"/}','${IDP_ARN//\"/} "ReadOnly Role for AWS PMA Account $CUSTOMER_NAME_FOR_DESCRIPTION $ACCOUNT_REGION"
@@ -249,6 +250,7 @@ check_type_account() {
         echo ${READONLY_ROLE_ARN//\"/}','${IDP_ARN//\"/}
         echo 'ReadOnlyAccess Role for '${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION' )'
         echo ""
+        echo "Creating Realms on KeyCloak..."
         push_role_sso ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/} "Technical Role for $CUSTOMER_NAME_FOR_DESCRIPTION $ACCOUNT_REGION"
         push_role_sso ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/} "Billing Role for $CUSTOMER_NAME_FOR_DESCRIPTION $ACCOUNT_REGION"
         push_role_sso ${READONLY_ROLE_ARN//\"/}','${IDP_ARN//\"/} "ReadOnly Role for $CUSTOMER_NAME_FOR_DESCRIPTION $ACCOUNT_REGION"
