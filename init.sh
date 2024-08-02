@@ -229,26 +229,34 @@ check_type_account() {
         2) create_idp; create_iam_role; check_region ;;
         *) echo 'Sorry, try again' >&2 ;;
     esac
-    echo 'Below are the roles for SSO roles registration:'
+    echo 'Below are the roles for SSO roles registration (Please update on AWS Account & Server Information):'
     if [ $choose_type_account -eq 1 ]; then
-        echo ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}
-        echo 'Technical Role for AWS PMA Account'${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION' )'
-        echo ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/}
-        echo 'Billing Role for AWS PMA Account'${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION' )'
-        echo ${READONLY_ROLE_ARN//\"/}','${IDP_ARN//\"/}
-        echo 'ReadOnlyAccess Role for AWS PMA Account'${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION' )'
+        echo Technical Role ARN: ${TECH_ROLE_ARN//\"/}
+        echo Billing Role ARN: ${BILLING_ROLE_ARN//\"/}
+        echo Read Only Role ARN: ${READONLY_ROLE_ARN//\"/}
+        echo IDP ARN: ${IDP_ARN//\"/}
+        # echo ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}
+        # echo 'Technical Role for AWS PMA Account'${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION' )'
+        # echo ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/}
+        # echo 'Billing Role for AWS PMA Account'${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION' )'
+        # echo ${READONLY_ROLE_ARN//\"/}','${IDP_ARN//\"/}
+        # echo 'ReadOnlyAccess Role for AWS PMA Account'${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION' )'
         echo ""
         echo "Creating Realms on KeyCloak..."
         push_role_sso ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/} "Technical Role for AWS PMA Account $CUSTOMER_NAME_FOR_DESCRIPTION $ACCOUNT_REGION"
         push_role_sso ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/} "Billing Role for AWS PMA Account $CUSTOMER_NAME_FOR_DESCRIPTION $ACCOUNT_REGION"
         push_role_sso ${READONLY_ROLE_ARN//\"/}','${IDP_ARN//\"/} "ReadOnly Role for AWS PMA Account $CUSTOMER_NAME_FOR_DESCRIPTION $ACCOUNT_REGION"
     else
-        echo ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}
-        echo 'Technical Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION
-        echo ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/}
-        echo 'Billing Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION
-        echo ${READONLY_ROLE_ARN//\"/}','${IDP_ARN//\"/}
-        echo 'ReadOnlyAccess Role for '${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION' )'
+        echo Technical Role ARN: ${TECH_ROLE_ARN//\"/}
+        echo Billing Role ARN: ${BILLING_ROLE_ARN//\"/}
+        echo Read Only Role ARN: ${READONLY_ROLE_ARN//\"/}
+        echo IDP ARN: ${IDP_ARN//\"/}
+        # echo ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/}
+        # echo 'Technical Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION
+        # echo ${BILLING_ROLE_ARN//\"/}','${IDP_ARN//\"/}
+        # echo 'Billing Role for '$CUSTOMER_NAME_FOR_DESCRIPTION' '$ACCOUNT_REGION
+        # echo ${READONLY_ROLE_ARN//\"/}','${IDP_ARN//\"/}
+        # echo 'ReadOnlyAccess Role for '${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA} '('${CUSTOMER_NAME_FOR_DESCRIPTION##*PMA}' '$ACCOUNT_REGION' )'
         echo ""
         echo "Creating Realms on KeyCloak..."
         push_role_sso ${TECH_ROLE_ARN//\"/}','${IDP_ARN//\"/} "Technical Role for $CUSTOMER_NAME_FOR_DESCRIPTION $ACCOUNT_REGION"
